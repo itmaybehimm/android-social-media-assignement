@@ -5,15 +5,18 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.socialmedia.data.dao.CommentDao
 import com.example.socialmedia.data.model.*
 
 @Database(
-    entities = [User::class],
-    version =1
+    entities = [User::class,Post::class,Comment::class],
+    version =2
 )
 abstract class SocialMediaDatabase : RoomDatabase() {
 
     abstract fun userDao(): UserDao
+    abstract fun postDao(): PostDao
+    abstract fun commentDao(): CommentDao
 
 
     companion object {

@@ -21,10 +21,13 @@ interface UserDao {
     @Delete
     suspend fun deleteUser(user:User)
 
-    @Query("SELECT * FROM user WHERE username = :username")
-    fun getUserByUsername(username: String): LiveData<User>
+    @Query("SELECT * FROM user WHERE email = :email")
+    fun getUserByEmail(email: String): LiveData<User>
 
-    @Query("SELECT * FROM user WHERE username = :username AND password = :password")
-    fun getUserByUsernameAndPassword(username: String, password:String): LiveData<User>
+    @Query("SELECT * FROM user WHERE email = :email AND password = :password")
+    fun getUserByEmailAndPassword(email: String, password:String): LiveData<User>
+
+    @Query("SELECT * FROM user WHERE id = :userId")
+    fun getUserById(userId: Int): LiveData<User?>
 
 }

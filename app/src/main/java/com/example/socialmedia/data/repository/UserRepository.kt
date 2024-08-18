@@ -18,11 +18,15 @@ class UserRepository(private val userDao: UserDao) {
         userDao.deleteUser(user)
     }
 
-    fun getUserByUsername(username: String): LiveData<User> {
-        return userDao.getUserByUsername(username)
+    fun getUserByEmail(email: String): LiveData<User> {
+        return userDao.getUserByEmail(email)
     }
 
-    fun getUserByUsernameAndPassword(username: String,password:String): LiveData<User> {
-        return userDao.getUserByUsernameAndPassword(username,password)
+    fun getUserByEmailAndPassword(email: String,password:String): LiveData<User> {
+        return userDao.getUserByEmailAndPassword(email,password)
+    }
+
+    fun getUserById(userId: Int): LiveData<User?> {
+        return userDao.getUserById(userId)
     }
 }

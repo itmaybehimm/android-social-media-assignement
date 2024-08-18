@@ -18,11 +18,17 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.socialmedia.R
+import com.example.socialmedia.data.viewmodel.UserViewModel
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(navController: NavController, userViewModel: UserViewModel = viewModel()) {
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
+    var loginError by remember { mutableStateOf<String?>(null) }
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -38,7 +44,7 @@ fun LoginScreen(navController: NavController) {
                 .fillMaxWidth()
                 .padding(24.dp)
                 .align(Alignment.Center),
-            backgroundColor = MaterialTheme.colors.surface.copy(alpha = 0.9f), // Make sure the card is visible
+            backgroundColor = MaterialTheme.colors.surface.copy(alpha = 0.9f),
             elevation = 12.dp,
             shape = MaterialTheme.shapes.medium
         ) {
@@ -62,10 +68,6 @@ fun LoginScreen(navController: NavController) {
                         .size(198.dp, 217.dp)
                         .padding(bottom = 20.dp)
                 )
-
-                var email by remember { mutableStateOf("") }
-                var password by remember { mutableStateOf("") }
-                var passwordVisible by remember { mutableStateOf(false) }
 
                 OutlinedTextField(
                     value = email,
@@ -109,10 +111,30 @@ fun LoginScreen(navController: NavController) {
                     )
                 )
 
+                // Display error message if login fails
+                if (loginError != null) {
+                    Text(
+                        text = loginError ?: "",
+                        color = Color.Red,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+
                 Button(
-                    onClick = { navController.navigate("addpost") },
+                    onClick = {
+                        userViewModel.getUserByEmailAndPassword(email, password).observeForever { user ->
+                            if (user != null) {
+                                // Successful login, navigate to the next screen
+                                navController.navigate("post")
+                            } else {
+                                // Failed login, show error message
+                                loginError = "Invalid email or password"
+                            }
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF48B76D)),
-                    shape = MaterialTheme.shapes.medium
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.padding(top = 24.dp)
                 ) {
                     Text(
                         text = "Login",

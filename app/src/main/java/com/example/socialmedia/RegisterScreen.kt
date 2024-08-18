@@ -23,10 +23,19 @@ import androidx.compose.material.TextField
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import com.example.socialmedia.R
-@Composable
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.socialmedia.data.model.User
+import com.example.socialmedia.data.viewmodel.UserViewModel
 
-fun RegisterScreen(navController: NavController) {
+@Composable
+fun RegisterScreen(navController: NavController, userViewModel: UserViewModel = viewModel()) {
+    var fullName by remember { mutableStateOf("") }
+    var dateOfBirth by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -54,8 +63,8 @@ fun RegisterScreen(navController: NavController) {
 
             // Full Name TextField
             TextField(
-                value = "",
-                onValueChange = {},
+                value = fullName,
+                onValueChange = { fullName = it },
                 placeholder = { Text(text = "Full Name") },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
                 modifier = Modifier
@@ -67,8 +76,8 @@ fun RegisterScreen(navController: NavController) {
 
             // Date of Birth TextField
             TextField(
-                value = "",
-                onValueChange = {},
+                value = dateOfBirth,
+                onValueChange = { dateOfBirth = it },
                 placeholder = { Text(text = "Date of Birth") },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
                 modifier = Modifier
@@ -80,8 +89,8 @@ fun RegisterScreen(navController: NavController) {
 
             // Secondary School Email Address TextField
             TextField(
-                value = "",
-                onValueChange = {},
+                value = email,
+                onValueChange = { email = it },
                 placeholder = { Text(text = "Secondary School Email Address") },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
                 modifier = Modifier
@@ -93,8 +102,8 @@ fun RegisterScreen(navController: NavController) {
 
             // Password TextField
             TextField(
-                value = "",
-                onValueChange = {},
+                value = password,
+                onValueChange = { password = it },
                 placeholder = { Text(text = "Password") },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
                 visualTransformation = PasswordVisualTransformation(),
@@ -105,9 +114,33 @@ fun RegisterScreen(navController: NavController) {
                     .background(Color.White)
             )
 
+            // Error Message Text
+            errorMessage?.let {
+                Text(
+                    text = it,
+                    color = Color.Red,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+            }
+
             // Register Button
             Button(
-                onClick = { /* Handle register click */ },
+                onClick = {
+                    if (fullName.isNotEmpty() && dateOfBirth.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
+                        val user = User(fullName = fullName, email = email,dateOfBirth=dateOfBirth ,password = password)
+                        userViewModel.insertUser(
+                            user,
+                            onSuccess = {
+                                navController.navigate("login") // Navigate to login or another screen
+                            },
+                            onError = { message ->
+                                errorMessage = message
+                            }
+                        )
+                    } else {
+                        errorMessage = "Please fill in all fields"
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 20.dp)

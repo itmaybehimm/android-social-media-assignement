@@ -9,7 +9,7 @@ import androidx.navigation.compose.composable
 fun SocialMediaApp() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "main") {
+    NavHost(navController = navController, startDestination = "post") {
         composable("main") { MainScreen(navController) }
         composable("login") { LoginScreen(navController) }
         composable("register") { RegisterScreen(navController) }

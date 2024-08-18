@@ -8,22 +8,20 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.fontResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.socialmedia.data.model.Post
+import com.example.socialmedia.data.viewmodel.PostViewModel
 import com.example.socialmedia.R
 
 @Composable
-fun AddPostScreen(navController: NavController) {
-    val playfairFontFamily = FontFamily(Font(R.font.playfair))
+fun AddPostScreen(navController: NavController, postViewModel: PostViewModel = viewModel()) {
     var postText by remember { mutableStateOf("") }
     var selectedImage by remember { mutableStateOf<Int?>(null) }
 
@@ -31,6 +29,7 @@ fun AddPostScreen(navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
     ) {
+        // Background image
         Image(
             painter = painterResource(id = R.drawable.bg_a),
             contentDescription = "Background",
@@ -45,13 +44,13 @@ fun AddPostScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Add post",
+                text = "Add Post",
                 fontSize = 28.sp,
-                fontFamily = playfairFontFamily,
                 color = Color(0xFF9C2BD4),
                 modifier = Modifier.padding(bottom = 32.dp)
             )
 
+            // Text field for post content
             OutlinedTextField(
                 value = postText,
                 onValueChange = { postText = it },
@@ -69,6 +68,7 @@ fun AddPostScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Placeholder for image
             if (selectedImage != null) {
                 Image(
                     painter = painterResource(id = selectedImage!!),
@@ -87,6 +87,7 @@ fun AddPostScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Button to add photo
             Button(
                 onClick = { /* Logic to select image */ },
                 modifier = Modifier
@@ -105,8 +106,18 @@ fun AddPostScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Submit button
             Button(
-                onClick = { /* Logic to submit post */ },
+                onClick = {
+                    // Create a new Post and submit it using the ViewModel
+                    val newPost = Post(
+                        title="random will re ove later",
+                        content = postText,
+                        userId = 1 // Replace with actual user ID
+                    )
+                    postViewModel.addPost(newPost)
+                    navController.popBackStack() // Navigate back after submission
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),

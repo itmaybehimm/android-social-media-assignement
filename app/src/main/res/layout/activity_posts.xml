@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/bg_a">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add post"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/playfair"
+        android:textColor="#9C2BD4"
+        android:layout_marginBottom="32dp"
+        android:layout_gravity="center_horizontal"/>
+
+    <EditText
+        android:id="@+id/postEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="What's on your mind?"
+        android:inputType="textMultiLine"
+        android:minLines="3"
+        android:gravity="top"
+        android:background="@drawable/rounded_textarea"
+        android:padding="16dp"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- ImageView for displaying the selected photo -->
+    <ImageView
+        android:id="@+id/selectedImageView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"
+        android:background="@drawable/rounded_textarea"/>
+
+    <!-- Button to choose a photo -->
+    <Button
+        android:id="@+id/selectImageButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Photo"
+        android:background="@drawable/rounded_outline"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/submitButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Post"
+        android:background="@drawable/button_background"
+        android:layout_marginBottom="16dp"/>
+
+</LinearLayout>

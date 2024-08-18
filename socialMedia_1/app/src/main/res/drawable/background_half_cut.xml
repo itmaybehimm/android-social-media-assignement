@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- First layer: the half-cut image -->
+    <item>
+        <bitmap
+            android:src="@drawable/image_placeholder"
+        android:gravity="center"/>
+    </item>
+    <!-- Second layer: the background color or shape -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/secondaryDarkColor"/>
+            <corners android:radius="0dp"/>
+        </shape>
+    </item>
+</layer-list>

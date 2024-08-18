@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center"
+    android:background="@drawable/bg_a">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Welcome to Student App"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/playfair"
+        android:textColor="#9C2BD4"
+        android:layout_marginBottom="32dp"/>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Please register or login"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/roboto_regular"
+        android:textColor="#000000"
+        android:layout_marginBottom="32dp"/>
+
+    <Button
+        android:id="@+id/registerButton"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Register"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/button_background"
+    android:textColor="@android:color/white"/>
+
+    <Button
+        android:id="@+id/loginButton"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Login"
+        android:background="@drawable/button_background"
+    android:textColor="@android:color/white"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Copyright@2024"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/playfair"
+        android:textColor="#000000"
+        android:layout_marginTop="100dp"/>
+
+</LinearLayout>

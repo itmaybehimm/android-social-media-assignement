@@ -1,5 +1,7 @@
 package com.example.socialmedia
 
+import android.util.Log
+import android.util.Log.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -8,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,6 +31,8 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel = vie
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var loginError by remember { mutableStateOf<String?>(null) }
+
+    val currentUser by userViewModel.currentUser.observeAsState()
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -111,7 +116,6 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel = vie
                     )
                 )
 
-                // Display error message if login fails
                 if (loginError != null) {
                     Text(
                         text = loginError ?: "",
@@ -122,15 +126,7 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel = vie
 
                 Button(
                     onClick = {
-                        userViewModel.getUserByEmailAndPassword(email, password).observeForever { user ->
-                            if (user != null) {
-                                // Successful login, navigate to the next screen
-                                navController.navigate("post")
-                            } else {
-                                // Failed login, show error message
-                                loginError = "Invalid email or password"
-                            }
-                        }
+                        userViewModel.getUserByEmailAndPassword(email, password)
                     },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF48B76D)),
                     shape = MaterialTheme.shapes.medium,
@@ -150,6 +146,15 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel = vie
                         .align(Alignment.CenterHorizontally),
                     color = Color(0xFF757575)
                 )
+            }
+        }
+
+        // Observe the current user and navigate on success
+        LaunchedEffect(currentUser) {
+            if (currentUser != null) {
+                d("Login","Login screen ${currentUser}")
+                userViewModel.saveUserSession(currentUser!!)
+                navController.navigate("post")
             }
         }
     }

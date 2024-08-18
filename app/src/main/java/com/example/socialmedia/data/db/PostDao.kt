@@ -17,6 +17,8 @@ interface PostDao {
     @Query("SELECT * FROM post WHERE id = :postId")
     fun getPostByIdFlow(postId: Int): Flow<Post>
 
+
+
     @Query("UPDATE post SET like_count = like_count + 1 WHERE id = :postId")
     suspend fun increaseLikeCount(postId: Int)
 

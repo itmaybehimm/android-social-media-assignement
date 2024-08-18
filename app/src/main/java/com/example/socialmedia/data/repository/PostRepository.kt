@@ -26,6 +26,7 @@ class PostRepository(private val postDao: PostDao) {
         return postDao.getPostByIdFlow(postId)
     }
 
+
     suspend fun increaseLikeCount(postId: Int) {
         postDao.increaseLikeCount(postId)
     }

@@ -19,16 +19,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.socialmedia.data.model.Comment
 import com.example.socialmedia.data.model.Post
+import com.example.socialmedia.data.model.User
 import com.example.socialmedia.data.viewmodel.CommentViewModel
 import com.example.socialmedia.data.viewmodel.UserViewModel
-
 @Composable
 fun PostItem(
     post: Post,
     commentViewModel: CommentViewModel,
     userViewModel: UserViewModel,
+    currentUser: User,
     onLike: () -> Unit,
-    onDislike: () -> Unit
+    onDislike: () -> Unit,
+    onEdit: () -> Unit // Add this parameter
 ) {
     val comments by commentViewModel.getCommentsByPostId(post.id).collectAsState()
     val commentsPerPage = 4
@@ -90,7 +92,7 @@ fun PostItem(
                     onClick = {
                         val comment = Comment(
                             postId = post.id,
-                            userId = 1, // Replace with actual user ID
+                            userId = currentUser.id, // Use currentUser ID
                             content = commentText.text
                         )
                         commentViewModel.insertComment(comment)
@@ -177,6 +179,16 @@ fun PostItem(
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFB74B4B))
                 ) {
                     Text(text = "Dislike (${post.dislikeCount})", fontSize = 14.sp, color = Color.White)
+                }
+
+                // Show edit button if the current user is the post author
+                if (currentUser.id == post.userId) {
+                    Button(
+                        onClick = onEdit,
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF9C2BD4))
+                    ) {
+                        Text(text = "Edit", fontSize = 14.sp, color = Color.White)
+                    }
                 }
             }
         }

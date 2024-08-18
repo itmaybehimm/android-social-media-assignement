@@ -22,11 +22,19 @@ class UserRepository(private val userDao: UserDao) {
         return userDao.getUserByEmail(email)
     }
 
-    fun getUserByEmailAndPassword(email: String,password:String): LiveData<User> {
-        return userDao.getUserByEmailAndPassword(email,password)
+    suspend fun getUserByEmailAndPassword(email: String, password: String): User? {
+        return userDao.getUserByEmailAndPassword(email, password)
+    }
+
+    fun getUserByEmailAndPasswordNonCurrent(email: String,password:String): LiveData<User> {
+        return userDao.getUserByEmailAndPasswordNonCurrent(email,password)
     }
 
     fun getUserById(userId: Int): LiveData<User?> {
         return userDao.getUserById(userId)
+    }
+
+    fun getUserByIdNonLive(userId: Int): User? {
+        return userDao.getUserByIdNonLive(userId)
     }
 }

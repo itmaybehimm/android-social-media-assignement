@@ -25,9 +25,14 @@ interface UserDao {
     fun getUserByEmail(email: String): LiveData<User>
 
     @Query("SELECT * FROM user WHERE email = :email AND password = :password")
-    fun getUserByEmailAndPassword(email: String, password:String): LiveData<User>
+    fun getUserByEmailAndPasswordNonCurrent(email: String, password:String): LiveData<User>
 
     @Query("SELECT * FROM user WHERE id = :userId")
     fun getUserById(userId: Int): LiveData<User?>
 
+    @Query("SELECT * FROM user WHERE id = :userId")
+    fun getUserByIdNonLive(userId: Int): User?
+
+    @Query("SELECT * FROM user WHERE email = :email AND password = :password LIMIT 1")
+    suspend fun getUserByEmailAndPassword(email: String, password: String): User?
 }

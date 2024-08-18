@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.socialmedia.data.db.SocialMediaDatabase
 import com.example.socialmedia.data.model.Post
 import com.example.socialmedia.data.repository.PostRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
@@ -42,6 +43,16 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     fun addPost(post: Post) {
         viewModelScope.launch {
             postRepository.insertPost(post) // Ensure this method is implemented in your repository
+        }
+    }
+
+    fun getPostById(postId: Int): Flow<Post?> {
+        return postRepository.getPostById(postId)
+    }
+
+    fun updatePost(post: Post) {
+        viewModelScope.launch {
+            postRepository.updatePost(post) // Ensure this method is implemented in your repository
         }
     }
 }

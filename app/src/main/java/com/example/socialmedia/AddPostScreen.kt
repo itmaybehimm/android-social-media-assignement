@@ -1,11 +1,15 @@
 package com.example.socialmedia
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -16,27 +20,33 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import com.example.socialmedia.data.model.Post
 import com.example.socialmedia.data.viewmodel.PostViewModel
 import com.example.socialmedia.R
+import com.example.socialmedia.data.viewmodel.UserViewModel
 
 @Composable
-fun AddPostScreen(navController: NavController, postViewModel: PostViewModel = viewModel()) {
+fun AddPostScreen(navController: NavController, postViewModel: PostViewModel = viewModel(),userViewModel: UserViewModel=viewModel()) {
     var postText by remember { mutableStateOf("") }
-    var selectedImage by remember { mutableStateOf<Int?>(null) }
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    var imageSelectionError by remember { mutableStateOf<String?>(null) }
+
+    val currentUser by userViewModel.currentUser.observeAsState()
+
+    // Image picker launcher
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        selectedImageUri = uri
+        imageSelectionError = if (uri == null) "Failed to select image" else null
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        // Background image
-        Image(
-            painter = painterResource(id = R.drawable.bg_a),
-            contentDescription = "Background",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -68,10 +78,10 @@ fun AddPostScreen(navController: NavController, postViewModel: PostViewModel = v
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Placeholder for image
-            if (selectedImage != null) {
+            // Display selected image if available
+            selectedImageUri?.let {
                 Image(
-                    painter = painterResource(id = selectedImage!!),
+                    painter = rememberAsyncImagePainter(model = it),
                     contentDescription = "Selected Image",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -89,7 +99,9 @@ fun AddPostScreen(navController: NavController, postViewModel: PostViewModel = v
 
             // Button to add photo
             Button(
-                onClick = { /* Logic to select image */ },
+                onClick = {
+                    imagePickerLauncher.launch("image/*")
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
@@ -106,17 +118,29 @@ fun AddPostScreen(navController: NavController, postViewModel: PostViewModel = v
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Show error message if image selection fails
+            imageSelectionError?.let {
+                Text(
+                    text = it,
+                    color = Color.Red,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+            }
+
             // Submit button
             Button(
                 onClick = {
-                    // Create a new Post and submit it using the ViewModel
-                    val newPost = Post(
-                        title="random will re ove later",
-                        content = postText,
-                        userId = 1 // Replace with actual user ID
-                    )
-                    postViewModel.addPost(newPost)
-                    navController.popBackStack() // Navigate back after submission
+                    if (postText.isNotEmpty()) {
+                        val newPost = Post(
+                            content = postText,
+                            imageUrl = selectedImageUri?.toString(), // Include image URI if selected
+                            userId = 1 // Replace with actual user ID
+                        )
+                        postViewModel.addPost(newPost)
+                        navController.popBackStack() // Navigate back after submission
+                    } else {
+                        imageSelectionError = "Please enter some content"
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -133,3 +157,4 @@ fun AddPostScreen(navController: NavController, postViewModel: PostViewModel = v
         }
     }
 }
+

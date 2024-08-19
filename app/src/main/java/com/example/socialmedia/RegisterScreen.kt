@@ -1,5 +1,6 @@
 package com.example.socialmedia
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -24,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.socialmedia.data.model.User
 import com.example.socialmedia.data.viewmodel.UserViewModel
@@ -34,6 +36,8 @@ fun RegisterScreen(navController: NavController, userViewModel: UserViewModel = 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    val context = LocalContext.current
+
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -75,7 +79,7 @@ fun RegisterScreen(navController: NavController, userViewModel: UserViewModel = 
             TextField(
                 value = dateOfBirth,
                 onValueChange = { dateOfBirth = it },
-                placeholder = { Text(text = "Date of Birth") },
+                placeholder = { Text(text = "Date of Birth (yyyy-MM-dd)") },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -101,7 +105,7 @@ fun RegisterScreen(navController: NavController, userViewModel: UserViewModel = 
             TextField(
                 value = password,
                 onValueChange = { password = it },
-                placeholder = { Text(text = "Password") },
+                placeholder = { Text(text = "Password (min. 8 characters)") },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier
@@ -123,21 +127,26 @@ fun RegisterScreen(navController: NavController, userViewModel: UserViewModel = 
             // Register Button
             Button(
                 onClick = {
-                    if (fullName.isNotEmpty() && dateOfBirth.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
-                        val user = User(fullName = fullName, email = email, dateOfBirth = dateOfBirth, password = password)
-                        userViewModel.insertUser(
-                            user,
-                            onSuccess = {
-                                // Ensure this runs on the main thread
-                                navController.navigate("login") // Navigate to login or another screen
-                            },
-                            onError = { message ->
-                                // Ensure this runs on the main thread
-                                errorMessage = "Invalid parameters"
-                            }
-                        )
-                    } else {
-                        errorMessage = "Please fill in all fields"
+                    when {
+                        fullName.isEmpty() -> errorMessage = "Full Name is required"
+                        dateOfBirth.isEmpty() -> errorMessage = "Date of Birth is required"
+                        email.isEmpty() -> errorMessage = "Email is required"
+                        password.isEmpty() -> errorMessage = "Password is required"
+                        else -> {
+                            val user = User(fullName = fullName, email = email, dateOfBirth = dateOfBirth, password = password)
+                            userViewModel.insertUser(
+                                user,
+                                onSuccess = {
+                                    Toast.makeText(context, "Registration Successful", Toast.LENGTH_SHORT).show()
+                                    navController.navigate("login") {
+                                        popUpTo("register") { inclusive = true }
+                                    }
+                                },
+                                onError = { message ->
+                                    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                                }
+                            )
+                        }
                     }
                 },
                 modifier = Modifier

@@ -31,7 +31,7 @@ fun SocialMediaApp() {
         composable("studentedit/{studentId}") { backStackEntry ->
             val studentId = backStackEntry.arguments?.getString("studentId")?.toIntOrNull()
             if (studentId != null) {
-                StudentEditScreen(studentId, userViewModel)
+                StudentEditScreen(navController,studentId, userViewModel)
             } else {
                 // Handle error, maybe show a message or navigate back
             }

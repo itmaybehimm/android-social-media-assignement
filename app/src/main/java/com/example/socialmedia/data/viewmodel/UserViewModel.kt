@@ -1,6 +1,7 @@
 package com.example.socialmedia.data.viewmodel
 
 import android.app.Application
+import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -41,10 +42,40 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     fun insertUser(user: User, onSuccess: () -> Unit, onError: (String) -> Unit) {
         scope.launch {
             try {
+                // Perform validation before attempting to insert the user
+                if (!isValidEmail(user.email)) {
+                    withContext(Dispatchers.Main) {
+                        onError("Invalid email format.")
+                    }
+                    return@launch
+                }
+
+                if (!isValidPassword(user.password)) {
+                    withContext(Dispatchers.Main) {
+                        onError("Password must be at least 8 characters long and contain letters and numbers.")
+                    }
+                    return@launch
+                }
+
+                if (!isValidDateOfBirth(user.dateOfBirth)) {
+                    withContext(Dispatchers.Main) {
+                        onError("Invalid date of birth format. Please use yyyy-MM-dd.")
+                    }
+                    return@launch
+                }
+
                 repository.insertUser(user)
-                onSuccess()
+                withContext(Dispatchers.Main) {
+                    onSuccess()
+                }
+            } catch (e: SQLiteConstraintException) {
+                withContext(Dispatchers.Main) {
+                    onError("Email already exists.")
+                }
             } catch (e: Exception) {
-                onError(e.message ?: "Error occurred")
+                withContext(Dispatchers.Main) {
+                    onError(e.message ?: "An error occurred.")
+                }
             }
         }
     }
@@ -52,15 +83,57 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     fun updateUser(user: User, onSuccess: () -> Unit, onError: (String) -> Unit) {
         scope.launch {
             try {
+                if (!isValidEmail(user.email)) {
+                    withContext(Dispatchers.Main) {
+                        onError("Invalid email format.")
+                    }
+                    return@launch
+                }
+                if (!isValidPassword(user.password)) {
+                    withContext(Dispatchers.Main) {
+                        onError("Password must be at least 8 characters long.")
+                    }
+                    return@launch
+                }
+
+                if (!isValidDateOfBirth(user.dateOfBirth)) {
+                    withContext(Dispatchers.Main) {
+                        onError("Invalid date of birth format. Expected format: yyyy-MM-dd")
+                    }
+                    return@launch
+                }
+
                 repository.updateUser(user)
 
-                onSuccess()
+                withContext(Dispatchers.Main) {
+                    onSuccess()
+                }
+            } catch (e: SQLiteConstraintException) {
+                withContext(Dispatchers.Main) {
+                    onError("Email already exists.")
+                }
             } catch (e: Exception) {
-
-                onError(e.message ?: "Error occurred")
+                withContext(Dispatchers.Main) {
+                    onError(e.message ?: "An error occurred")
+                }
             }
         }
     }
+
+    private fun isValidEmail(email: String): Boolean {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
+    private fun isValidPassword(password: String): Boolean {
+        return password.length >= 8
+    }
+
+    private fun isValidDateOfBirth(dob: String): Boolean {
+        // Assuming the format is "yyyy-MM-dd"
+        val datePattern = Regex("""\d{4}-\d{2}-\d{2}""")
+        return dob.matches(datePattern)
+    }
+
 
     fun deleteUser(user: User) {
 

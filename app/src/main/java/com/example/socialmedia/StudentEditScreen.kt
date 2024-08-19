@@ -22,13 +22,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.socialmedia.R
 import com.example.socialmedia.data.model.User
 import com.example.socialmedia.data.viewmodel.UserViewModel
 
-
 @Composable
-fun StudentEditScreen(studentId: Int, userViewModel: UserViewModel = viewModel()) {
+fun StudentEditScreen(navController: NavController,studentId: Int, userViewModel: UserViewModel = viewModel()) {
     val playfairFontFamily = FontFamily(Font(R.font.playfair))
     val student by userViewModel.getUserById(studentId).observeAsState()
     var fullName by remember { mutableStateOf("") }
@@ -37,6 +37,7 @@ fun StudentEditScreen(studentId: Int, userViewModel: UserViewModel = viewModel()
     var password by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
     val backgroundImage: Painter = painterResource(id = R.drawable.bg_a)
+    val context = LocalContext.current
 
     // Update state when student data changes
     LaunchedEffect(student) {
@@ -118,15 +119,20 @@ fun StudentEditScreen(studentId: Int, userViewModel: UserViewModel = viewModel()
 
             Button(
                 onClick = {
-                    userViewModel.updateUser(
-                        User(id = studentId, fullName = fullName, dateOfBirth = dob, email = email, password = password),
-                        onSuccess = {
-                            // Handle success, e.g., show a toast or navigate back
-                        },
-                        onError = { errorMessage ->
-                            // Handle error, e.g., show a toast with the error message
-                        }
-                    )
+                    if (fullName.isEmpty() || dob.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                        Toast.makeText(context, "All fields are required", Toast.LENGTH_SHORT).show()
+                    } else {
+                        userViewModel.updateUser(
+                            User(id = studentId, fullName = fullName, dateOfBirth = dob, email = email, password = password),
+                            onSuccess = {
+                                Toast.makeText(context, "User updated successfully", Toast.LENGTH_SHORT).show()
+                                navController.navigate("post")
+                            },
+                            onError = { errorMessage ->
+                                Toast.makeText(context, "Error: $errorMessage", Toast.LENGTH_SHORT).show()
+                            }
+                        )
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()

@@ -87,4 +87,6 @@ dependencies {
 
     implementation("androidx.compose.runtime:runtime-livedata:1.4.0") // For LiveData support
     implementation("androidx.compose.runtime:runtime:1.4.0") // For StateFlow support
+
+    implementation("io.coil-kt:coil-compose:2.0.0")
 }

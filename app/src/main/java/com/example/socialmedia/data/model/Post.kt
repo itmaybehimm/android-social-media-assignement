@@ -5,7 +5,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-
 @Entity(
     tableName = "post",
     indices = [Index(value = ["user_id"])],
@@ -17,11 +16,11 @@ import androidx.room.PrimaryKey
     )]
 )
 data class Post(
-    @ColumnInfo(name = "title")
-    val title: String,
-
     @ColumnInfo(name = "content")
     val content: String,
+
+    @ColumnInfo(name = "image_url")
+    val imageUrl: String?,  // New field for storing image URL
 
     @ColumnInfo(name = "like_count")
     val likeCount: Int = 0,

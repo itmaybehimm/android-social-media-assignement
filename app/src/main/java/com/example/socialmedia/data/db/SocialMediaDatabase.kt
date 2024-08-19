@@ -10,7 +10,7 @@ import com.example.socialmedia.data.model.*
 
 @Database(
     entities = [User::class,Post::class,Comment::class],
-    version =2
+    version =3
 )
 abstract class SocialMediaDatabase : RoomDatabase() {
 

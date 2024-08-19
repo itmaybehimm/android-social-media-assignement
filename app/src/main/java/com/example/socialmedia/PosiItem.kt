@@ -13,10 +13,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.example.socialmedia.data.model.Comment
 import com.example.socialmedia.data.model.Post
 import com.example.socialmedia.data.model.User
@@ -30,7 +33,7 @@ fun PostItem(
     currentUser: User,
     onLike: () -> Unit,
     onDislike: () -> Unit,
-    onEdit: () -> Unit ,
+    onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
     val comments by commentViewModel.getCommentsByPostId(post.id).collectAsState()
@@ -62,15 +65,22 @@ fun PostItem(
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-            Image(
-                painter = painterResource(id = R.drawable.bg_a),
-                contentDescription = "Post Image",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .padding(bottom = 16.dp),
-                contentScale = ContentScale.Crop
-            )
+            // Display selected image if available
+            Log.d("PostItem","${post}")
+            post.imageUrl?.let { imageUrl ->
+                Image(
+                    painter = rememberAsyncImagePainter(model = ImageRequest.Builder(LocalContext.current)
+                        .data(imageUrl)
+                        .crossfade(true)
+                        .build()),
+                    contentDescription = "Post Image",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .padding(bottom = 16.dp),
+                    contentScale = ContentScale.Crop
+                )
+            }
 
             var commentText by remember { mutableStateOf(TextFieldValue()) }
 
@@ -191,7 +201,6 @@ fun PostItem(
                         Text(text = "Edit", fontSize = 14.sp, color = Color.White)
                     }
 
-
                     Button(
                         onClick = onDelete,
                         colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red)
@@ -199,7 +208,7 @@ fun PostItem(
                         Text(text = "Delete", color = Color.White)
                     }
                 }
-                }
             }
         }
     }
+}

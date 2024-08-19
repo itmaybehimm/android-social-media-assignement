@@ -24,12 +24,16 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.socialmedia.data.viewmodel.UserViewModel
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+
 @Composable
 fun LoginScreen(navController: NavController, userViewModel: UserViewModel = viewModel()) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var loginError by remember { mutableStateOf<String?>(null) }
+    val context = LocalContext.current
 
     val currentUser by userViewModel.currentUser.observeAsState()
 
@@ -123,13 +127,6 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel = vie
                     )
                 )
 
-                if (loginError != null) {
-                    Text(
-                        text = loginError ?: "",
-                        color = Color.Red,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                }
 
                 Button(
                     onClick = {
@@ -163,8 +160,10 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel = vie
                 userViewModel.saveUserSession(currentUser!!)
                 navController.navigate("post") {
                     popUpTo("login") { inclusive = true }
+                    Toast.makeText(context, "Login Scucessful", Toast.LENGTH_LONG).show()
                 }
             }
         }
+
     }
 }

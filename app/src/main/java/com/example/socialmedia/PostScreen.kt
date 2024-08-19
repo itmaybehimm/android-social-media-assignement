@@ -157,6 +157,21 @@ fun PostScreen(
                 }
 
             }
+            else{
+                FloatingActionButton(
+                    onClick = { navController.navigate("studentedit/${currentUser.id}") },
+                    backgroundColor = Color(0xFF9C2BD4),
+                    contentColor = Color.White,
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(16.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_stat_name), // Replace with your desired admin icon
+                        contentDescription = "Navigate to Admin"
+                    )
+                }
+            }
 
             // Show confirmation dialog if required
             if (showConfirmDialog && postToDelete != null) {

@@ -30,7 +30,8 @@ fun PostItem(
     currentUser: User,
     onLike: () -> Unit,
     onDislike: () -> Unit,
-    onEdit: () -> Unit // Add this parameter
+    onEdit: () -> Unit ,
+    onDelete: () -> Unit
 ) {
     val comments by commentViewModel.getCommentsByPostId(post.id).collectAsState()
     val commentsPerPage = 4
@@ -182,15 +183,23 @@ fun PostItem(
                 }
 
                 // Show edit button if the current user is the post author
-                if (currentUser.id == post.userId) {
+                if (currentUser.id == post.userId || currentUser.role == "admin") {
                     Button(
                         onClick = onEdit,
                         colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF9C2BD4))
                     ) {
                         Text(text = "Edit", fontSize = 14.sp, color = Color.White)
                     }
+
+
+                    Button(
+                        onClick = onDelete,
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red)
+                    ) {
+                        Text(text = "Delete", color = Color.White)
+                    }
+                }
                 }
             }
         }
     }
-}

@@ -27,7 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.socialmedia.data.model.User
 import com.example.socialmedia.data.viewmodel.UserViewModel
-
 @Composable
 fun RegisterScreen(navController: NavController, userViewModel: UserViewModel = viewModel()) {
     var fullName by remember { mutableStateOf("") }
@@ -37,8 +36,7 @@ fun RegisterScreen(navController: NavController, userViewModel: UserViewModel = 
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         Image(
             painter = painterResource(id = R.drawable.bg_a),
@@ -57,8 +55,7 @@ fun RegisterScreen(navController: NavController, userViewModel: UserViewModel = 
                 text = "Register",
                 fontSize = 24.sp,
                 color = Color(0xFF9C2BD4),
-                modifier = Modifier
-                    .padding(bottom = 40.dp)
+                modifier = Modifier.padding(bottom = 40.dp)
             )
 
             // Full Name TextField
@@ -127,14 +124,16 @@ fun RegisterScreen(navController: NavController, userViewModel: UserViewModel = 
             Button(
                 onClick = {
                     if (fullName.isNotEmpty() && dateOfBirth.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
-                        val user = User(fullName = fullName, email = email,dateOfBirth=dateOfBirth ,password = password)
+                        val user = User(fullName = fullName, email = email, dateOfBirth = dateOfBirth, password = password)
                         userViewModel.insertUser(
                             user,
                             onSuccess = {
+                                // Ensure this runs on the main thread
                                 navController.navigate("login") // Navigate to login or another screen
                             },
                             onError = { message ->
-                                errorMessage = message
+                                // Ensure this runs on the main thread
+                                errorMessage = "Invalid parameters"
                             }
                         )
                     } else {

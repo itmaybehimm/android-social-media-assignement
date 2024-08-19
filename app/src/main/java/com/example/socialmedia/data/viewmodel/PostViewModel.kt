@@ -46,6 +46,12 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun deletePost(post: Post) {
+        viewModelScope.launch {
+            postRepository.deletePost(post) // Ensure this method is implemented in your repository
+        }
+    }
+
     fun getPostById(postId: Int): Flow<Post?> {
         return postRepository.getPostById(postId)
     }

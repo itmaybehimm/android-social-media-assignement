@@ -11,9 +11,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.ButtonDefaults
 
-
 @Composable
-fun StudentCard() {
+fun StudentItem(
+    studentName: String,
+    studentId: String,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -28,13 +32,13 @@ fun StudentCard() {
                 .padding(16.dp)
         ) {
             Text(
-                text = "Student Name",
+                text = studentName,
                 fontSize = 16.sp,
                 color = Color(0xFF333333)
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Student ID",
+                text = studentId,
                 fontSize = 14.sp,
                 color = Color(0xFF777777)
             )
@@ -44,14 +48,14 @@ fun StudentCard() {
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Button(
-                    onClick = { /* Handle Edit Click */ },
+                    onClick = onEdit,
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue)
                 ) {
                     Text(text = "Edit", color = Color.White)
                 }
                 Button(
-                    onClick = { /* Handle Delete Click */ },
+                    onClick = onDelete,
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red)
                 ) {

@@ -1,5 +1,6 @@
 package com.example.socialmedia
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -12,17 +13,24 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.Image
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.socialmedia.R
+import com.example.socialmedia.data.model.User
+import com.example.socialmedia.data.viewmodel.UserViewModel
+
 
 @Composable
-fun StudentEditScreen() {
+fun StudentEditScreen(studentId: Int, userViewModel: UserViewModel = viewModel()) {
     val playfairFontFamily = FontFamily(Font(R.font.playfair))
+    val student by userViewModel.getUserById(studentId).observeAsState()
     var fullName by remember { mutableStateOf("") }
     var dob by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -30,12 +38,21 @@ fun StudentEditScreen() {
     val scrollState = rememberScrollState()
     val backgroundImage: Painter = painterResource(id = R.drawable.bg_a)
 
+    // Update state when student data changes
+    LaunchedEffect(student) {
+        student?.let {
+            fullName = it.fullName
+            dob = it.dateOfBirth
+            email = it.email
+            // Do not auto-fill password for security reasons
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Transparent) // Set this to transparent
     ) {
-        // Set the background image
         Image(
             painter = backgroundImage,
             contentDescription = "Background",
@@ -100,7 +117,17 @@ fun StudentEditScreen() {
             )
 
             Button(
-                onClick = { /* Handle confirm action */ },
+                onClick = {
+                    userViewModel.updateUser(
+                        User(id = studentId, fullName = fullName, dateOfBirth = dob, email = email, password = password),
+                        onSuccess = {
+                            // Handle success, e.g., show a toast or navigate back
+                        },
+                        onError = { errorMessage ->
+                            // Handle error, e.g., show a toast with the error message
+                        }
+                    )
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 20.dp)

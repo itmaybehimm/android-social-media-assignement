@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.socialmedia.data.viewmodel.UserViewModel
-
 @Composable
 fun LoginScreen(navController: NavController, userViewModel: UserViewModel = viewModel()) {
     var email by remember { mutableStateOf("") }
@@ -33,6 +32,14 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel = vie
     var loginError by remember { mutableStateOf<String?>(null) }
 
     val currentUser by userViewModel.currentUser.observeAsState()
+
+    LaunchedEffect(Unit) {
+        if (currentUser != null) {
+            userViewModel.logout {
+                d("LoginScreen", "Clearing existing session at LoginScreen launch")
+            }
+        }
+    }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -152,9 +159,11 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel = vie
         // Observe the current user and navigate on success
         LaunchedEffect(currentUser) {
             if (currentUser != null) {
-                d("Login","Login screen ${currentUser}")
+                d("UserViewModel","Login screen ${currentUser}")
                 userViewModel.saveUserSession(currentUser!!)
-                navController.navigate("post")
+                navController.navigate("post") {
+                    popUpTo("login") { inclusive = true }
+                }
             }
         }
     }

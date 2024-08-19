@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.socialmedia.data.model.Post
 import com.example.socialmedia.data.model.User
 import com.example.socialmedia.data.viewmodel.CommentViewModel
 import com.example.socialmedia.data.viewmodel.PostViewModel
@@ -35,6 +36,24 @@ fun PostScreen(
 
     // Observe current user
     val currentUser by userViewModel.currentUser.observeAsState()
+
+    // State for tracking navigation
+    var navigateToLogin by remember { mutableStateOf(false) }
+
+    // State for showing confirmation dialog
+    var showConfirmDialog by remember { mutableStateOf(false) }
+    var postToDelete by remember { mutableStateOf<Post?>(null) }
+
+    // Effect to handle navigation
+    LaunchedEffect(navigateToLogin) {
+        if (navigateToLogin) {
+            navController.navigate("main") {
+                // Clear the back stack to prevent returning to PostScreen
+                popUpTo("main") { inclusive = true }
+            }
+            navigateToLogin = false // Reset the state
+        }
+    }
 
     // Show content only if user is logged in
     currentUser?.let { currentUser ->
@@ -80,8 +99,13 @@ fun PostScreen(
                         currentUser = currentUser, // Pass the current user to PostItem
                         onEdit = {
                             navController.navigate("editpost/${post.id}")
+                        },
+                        onDelete = {
+                            // Show the confirmation dialog
+                            postToDelete = post
+                            showConfirmDialog = true
                         }
-                        )
+                    )
                 }
             }
 
@@ -95,7 +119,7 @@ fun PostScreen(
                     .padding(16.dp)
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.baseline_add_24), // Replace with your add icon
+                    painter = painterResource(id = R.drawable.baseline_add_24),
                     contentDescription = "Add Post"
                 )
             }
@@ -103,8 +127,10 @@ fun PostScreen(
             // Logout button
             Button(
                 onClick = {
-                    userViewModel.logout()
-                    navController.navigate("main")
+                    userViewModel.logout {
+                        // Trigger navigation to login screen after logout completes
+                        navigateToLogin = true
+                    }
                 },
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -112,6 +138,56 @@ fun PostScreen(
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF9C2BD4))
             ) {
                 Text(text = "Logout", color = Color.White)
+            }
+
+            // Admin button if the user is an admin
+            if (currentUser.role == "admin") {
+                FloatingActionButton(
+                    onClick = { navController.navigate("admin") },
+                    backgroundColor = Color(0xFF9C2BD4),
+                    contentColor = Color.White,
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(16.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_admin_panel_settings_24), // Replace with your desired admin icon
+                        contentDescription = "Navigate to Admin"
+                    )
+                }
+
+            }
+
+            // Show confirmation dialog if required
+            if (showConfirmDialog && postToDelete != null) {
+                AlertDialog(
+                    onDismissRequest = { showConfirmDialog = false },
+                    title = { Text("Delete Post") },
+                    text = { Text("Are you sure you want to delete this post?") },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                postToDelete?.let {
+                                    postViewModel.deletePost(it)
+                                    postToDelete = null
+                                }
+                                showConfirmDialog = false
+                            }
+                        ) {
+                            Text("Delete")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = {
+                                showConfirmDialog = false
+                                postToDelete = null
+                            }
+                        ) {
+                            Text("Cancel")
+                        }
+                    }
+                )
             }
         }
     }

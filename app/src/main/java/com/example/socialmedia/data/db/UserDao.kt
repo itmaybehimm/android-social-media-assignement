@@ -9,6 +9,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.socialmedia.data.model.User
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao {
@@ -20,6 +21,11 @@ interface UserDao {
 
     @Delete
     suspend fun deleteUser(user:User)
+    @Query("SELECT * FROM user")
+    fun getAllUsers(): LiveData<List<User>>
+
+    @Query("SELECT * FROM user WHERE role = 'user'")
+    fun getAllStudentsFlow(): Flow<List<User>>
 
     @Query("SELECT * FROM user WHERE email = :email")
     fun getUserByEmail(email: String): LiveData<User>

@@ -3,6 +3,7 @@ package com.example.socialmedia.data.repository
 import androidx.lifecycle.LiveData
 import com.example.socialmedia.data.db.UserDao
 import com.example.socialmedia.data.model.User
+import kotlinx.coroutines.flow.Flow
 
 class UserRepository(private val userDao: UserDao) {
 
@@ -37,4 +38,13 @@ class UserRepository(private val userDao: UserDao) {
     fun getUserByIdNonLive(userId: Int): User? {
         return userDao.getUserByIdNonLive(userId)
     }
+
+    fun getAllUsers(): LiveData<List<User>> {
+        return userDao.getAllUsers()
+    }
+
+    fun getAllStudentsFlow(): Flow<List<User>> {
+        return userDao.getAllStudentsFlow()
+    }
+
 }

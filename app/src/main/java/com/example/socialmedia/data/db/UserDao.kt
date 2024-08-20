@@ -8,6 +8,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.example.socialmedia.data.model.ReactionType
 import com.example.socialmedia.data.model.User
 import kotlinx.coroutines.flow.Flow
 
@@ -39,9 +40,13 @@ interface UserDao {
     @Query("SELECT * FROM user WHERE id = :userId")
     fun getUserByIdNonLive(userId: Int): User?
 
+
+
     @Query("SELECT * FROM user WHERE email = :email AND password = :password LIMIT 1")
     suspend fun getUserByEmailAndPassword(email: String, password: String): User?
 
     @Query("INSERT INTO user (full_name, email, dob, password, role) VALUES ('admin', 'admin@gmail.com', '2003-04-10', '12345678', 'admin')")
     suspend fun insertAdminHardcoded()
+
+
 }

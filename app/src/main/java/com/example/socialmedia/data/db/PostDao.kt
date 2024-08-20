@@ -19,11 +19,6 @@ interface PostDao {
 
 
 
-    @Query("UPDATE post SET like_count = like_count + 1 WHERE id = :postId")
-    suspend fun increaseLikeCount(postId: Int)
-
-    @Query("UPDATE post SET dislike_count = dislike_count + 1 WHERE id = :postId")
-    suspend fun increaseDislikeCount(postId: Int)
 
     @Insert
     suspend fun insertPost(post: Post): Long

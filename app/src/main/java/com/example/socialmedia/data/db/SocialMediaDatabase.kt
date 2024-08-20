@@ -9,14 +9,16 @@ import com.example.socialmedia.data.dao.CommentDao
 import com.example.socialmedia.data.model.*
 
 @Database(
-    entities = [User::class,Post::class,Comment::class],
-    version =3
+    entities = [User::class,Post::class,Comment::class,UserPostReaction::class],
+    version =4
 )
 abstract class SocialMediaDatabase : RoomDatabase() {
 
     abstract fun userDao(): UserDao
     abstract fun postDao(): PostDao
     abstract fun commentDao(): CommentDao
+
+    abstract fun userReactionDao(): UserReactionDao
 
 
     companion object {

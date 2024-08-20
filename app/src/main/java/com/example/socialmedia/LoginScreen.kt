@@ -25,7 +25,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.socialmedia.data.viewmodel.UserViewModel
 import android.widget.Toast
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.platform.LocalContext
+import java.time.format.TextStyle
 
 @Composable
 fun LoginScreen(navController: NavController, userViewModel: UserViewModel = viewModel()) {
@@ -143,13 +145,22 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel = vie
                     )
                 }
 
-                Text(
-                    text = "Forgot Password?",
+                Button(
+                    onClick = {
+                        navController.navigate("register")
+                    },
                     modifier = Modifier
                         .padding(top = 16.dp)
                         .align(Alignment.CenterHorizontally),
-                    color = Color(0xFF757575)
-                )
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF757575)),
+                    shape = RoundedCornerShape(8.dp) // Add rounded corners for a better look
+                ) {
+                    Text(
+                        text = "Register Account",
+                        color = Color.White, // Make sure the text color contrasts well with the button background
+                                          )
+                }
+
             }
         }
 

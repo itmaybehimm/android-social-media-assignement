@@ -27,11 +27,5 @@ class PostRepository(private val postDao: PostDao) {
     }
 
 
-    suspend fun increaseLikeCount(postId: Int) {
-        postDao.increaseLikeCount(postId)
-    }
 
-    suspend fun increaseDislikeCount(postId: Int) {
-        postDao.increaseDislikeCount(postId)
-    }
 }

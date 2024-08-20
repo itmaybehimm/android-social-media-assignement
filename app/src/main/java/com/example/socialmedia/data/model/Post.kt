@@ -22,12 +22,6 @@ data class Post(
     @ColumnInfo(name = "image_url")
     val imageUrl: String?,  // New field for storing image URL
 
-    @ColumnInfo(name = "like_count")
-    val likeCount: Int = 0,
-
-    @ColumnInfo(name = "dislike_count")
-    val dislikeCount: Int = 0,
-
     @ColumnInfo(name = "user_id")
     val userId: Int,
 

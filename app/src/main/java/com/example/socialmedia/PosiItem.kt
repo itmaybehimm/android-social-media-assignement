@@ -38,16 +38,18 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ThumbDown
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.ui.text.font.FontWeight
+import com.example.socialmedia.data.model.ReactionType
+import com.example.socialmedia.data.viewmodel.PostViewModel
 import com.google.accompanist.permissions.isGranted
+import kotlinx.coroutines.launch
 
 @Composable
 fun PostItem(
     post: Post,
+    postViewModel: PostViewModel,
     commentViewModel: CommentViewModel,
     userViewModel: UserViewModel,
     currentUser: User,
-    onLike: () -> Unit,
-    onDislike: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -58,9 +60,14 @@ fun PostItem(
     val paginatedComments = comments
         .drop(currentPage * commentsPerPage)
         .take(commentsPerPage)
+
     val user by userViewModel.getUserById(post.userId).observeAsState()
     var showDeleteDialog by remember { mutableStateOf(false) }
     var commentToDelete by remember { mutableStateOf<Comment?>(null) }
+
+    val likeCount by postViewModel.getLikeCount(post.id).collectAsState(0)
+    val dislikeCount by postViewModel.getDislikeCount(post.id).collectAsState(0)
+    val currentReaction by postViewModel.getCurrentReaction(currentUser.id, post.id).collectAsState(null)
 
     if (showDeleteDialog && commentToDelete != null) {
         AlertDialog(
@@ -254,56 +261,62 @@ fun PostItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                IconButton(onClick = onLike) {
+                IconButton(onClick = {
+                    if (currentUser.id != post.userId && currentReaction != ReactionType.LIKE) {
+                        postViewModel.addLike(currentUser.id, post.id)
+                    }
+                }) {
                     Icon(
                         imageVector = Icons.Filled.ThumbUp,
                         contentDescription = "Like",
-                        tint = Color(0xFF48B76D)
+                        tint = if (currentReaction == ReactionType.LIKE) Color(0xFF48B76D) else Color.Gray
                     )
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                Text(text = "${post.likeCount}", fontSize = 14.sp, color = Color.Black)
+                Text(text = "${likeCount}", fontSize = 14.sp, color = Color.Black) // Show like count
 
                 Spacer(modifier = Modifier.width(16.dp))
 
-                IconButton(onClick = onDislike) {
+                IconButton(onClick = {
+                    if (currentUser.id != post.userId && currentReaction != ReactionType.DISLIKE) {
+                        postViewModel.addDislike(currentUser.id, post.id)
+                    }
+                }) {
                     Icon(
                         imageVector = Icons.Filled.ThumbDown,
                         contentDescription = "Dislike",
-                        tint = Color(0xFFB74B4B)
+                        tint = if (currentReaction == ReactionType.DISLIKE) Color(0xFFB74B4B) else Color.Gray
                     )
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                Text(text = "${post.dislikeCount}", fontSize = 14.sp, color = Color.Black)
+                Text(text = "${dislikeCount}", fontSize = 14.sp, color = Color.Black) // Show dislike count
             }
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                if (currentUser.id == post.userId || currentUser.role == "admin") {
+            // Conditionally show Edit and Delete options
+            if (currentUser.id == post.userId || currentUser.role == "admin") {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
                     IconButton(onClick = onEdit) {
                         Icon(
                             imageVector = Icons.Filled.Edit,
-                            contentDescription = "Edit",
-                            tint = Color(0xFF9C2BD4)
+                            contentDescription = "Edit Post",
+                            tint = Color.Blue
                         )
                     }
 
-                    IconButton(onClick = {
-                        Log.d("PostItem", "Preparing to delete post with ID: ${post.id}") // Debug log
-                        onDelete()
-                    }) {
+                    IconButton(onClick = onDelete) {
                         Icon(
                             imageVector = Icons.Filled.Delete,
-                            contentDescription = "Delete",
+                            contentDescription = "Delete Post",
                             tint = Color.Red
                         )
                     }

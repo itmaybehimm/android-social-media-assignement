@@ -24,6 +24,7 @@ import com.example.socialmedia.data.viewmodel.CommentViewModel
 import com.example.socialmedia.data.viewmodel.PostViewModel
 import com.example.socialmedia.data.viewmodel.UserViewModel
 import kotlinx.coroutines.launch
+
 @Composable
 fun PostScreen(
     navController: NavController,
@@ -92,8 +93,7 @@ fun PostScreen(
 
                     PostItem(
                         post = post,
-                        onLike = { postViewModel.increaseLikeCount(post.id) },
-                        onDislike = { postViewModel.increaseDislikeCount(post.id) },
+                        postViewModel = postViewModel,
                         commentViewModel = commentViewModel,
                         userViewModel = userViewModel,
                         currentUser = currentUser, // Pass the current user to PostItem

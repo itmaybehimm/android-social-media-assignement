@@ -11,7 +11,8 @@ import com.example.socialmedia.data.viewmodel.UserViewModel
 @Composable
 fun SocialMediaApp() {
     val navController = rememberNavController()
-    val userViewModel: UserViewModel = viewModel() // Create ViewModel instance here
+    val userViewModel: UserViewModel = viewModel()
+    userViewModel.insertAdminUser()
 
     NavHost(navController = navController, startDestination = "main") {
         composable("main") { MainScreen(navController) }

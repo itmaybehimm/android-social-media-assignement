@@ -39,6 +39,17 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         loadUserSession()
     }
 
+    fun insertAdminUser() {
+        viewModelScope.launch {
+            try {
+                repository.insertAdminHardcoded()
+            } catch (e: Exception) {
+                // Admin exists
+
+            }
+        }
+    }
+
     fun insertUser(user: User, onSuccess: () -> Unit, onError: (String) -> Unit) {
         scope.launch {
             try {
@@ -152,7 +163,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         scope.launch {
             try {
                 val user = repository.getUserByEmailAndPassword(email, password)
-
+                Log.d("UserViewModel", "Fetched ${user?.email} with name ${user?.fullName} ")
                 _currentUser.postValue(user)
             } catch (e: Exception) {
                 Log.e("UserViewModel", "Error fetching user by email and password", e)

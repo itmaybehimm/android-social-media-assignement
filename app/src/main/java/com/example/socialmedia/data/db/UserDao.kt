@@ -41,4 +41,7 @@ interface UserDao {
 
     @Query("SELECT * FROM user WHERE email = :email AND password = :password LIMIT 1")
     suspend fun getUserByEmailAndPassword(email: String, password: String): User?
+
+    @Query("INSERT INTO user (full_name, email, dob, password, role) VALUES ('admin', 'admin@gmail.com', '2003-04-10', '12345678', 'admin')")
+    suspend fun insertAdminHardcoded()
 }

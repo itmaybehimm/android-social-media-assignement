@@ -89,4 +89,7 @@ dependencies {
     implementation("androidx.compose.runtime:runtime:1.4.0") // For StateFlow support
 
     implementation("io.coil-kt:coil-compose:2.0.0")
+
+    implementation("com.google.accompanist:accompanist-permissions:0.30.1")
+
 }

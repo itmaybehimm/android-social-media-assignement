@@ -47,4 +47,7 @@ class UserRepository(private val userDao: UserDao) {
         return userDao.getAllStudentsFlow()
     }
 
+    suspend fun insertAdminHardcoded(){
+        return userDao.insertAdminHardcoded()
+    }
 }

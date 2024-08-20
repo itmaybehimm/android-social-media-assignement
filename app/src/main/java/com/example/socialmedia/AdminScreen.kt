@@ -18,16 +18,23 @@ import com.example.socialmedia.R
 import com.example.socialmedia.StudentItem
 import com.example.socialmedia.data.model.User
 import com.example.socialmedia.data.viewmodel.UserViewModel
+
 @Composable
 fun AdminScreen(navController: NavController, userViewModel: UserViewModel = viewModel()) {
     // Observe the list of students
     val students by userViewModel.allStudents.collectAsState(initial = emptyList())
     var currentPage by remember { mutableStateOf(1) }
     val studentsPerPage = 2
+    var searchQuery by remember { mutableStateOf("") }
+
+    // Filter students based on search query
+    val filteredStudents = students.filter {
+        it.email.contains(searchQuery, ignoreCase = true)
+    }
 
     // Pagination logic
-    val totalPages = (students.size + studentsPerPage - 1) / studentsPerPage
-    val paginatedStudents = students.chunked(studentsPerPage).getOrNull(currentPage - 1) ?: emptyList()
+    val totalPages = (filteredStudents.size + studentsPerPage - 1) / studentsPerPage
+    val paginatedStudents = filteredStudents.chunked(studentsPerPage).getOrNull(currentPage - 1) ?: emptyList()
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -66,6 +73,14 @@ fun AdminScreen(navController: NavController, userViewModel: UserViewModel = vie
                     fontSize = 28.sp,
                     color = Color(0xFF9C2BD4),
                     modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                // Search bar
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    label = { Text("Search by email") },
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
                 )
 
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {

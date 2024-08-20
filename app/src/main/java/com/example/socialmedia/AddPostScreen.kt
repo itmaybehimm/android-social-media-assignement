@@ -1,5 +1,8 @@
 package com.example.socialmedia
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -13,7 +16,9 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -26,21 +31,32 @@ import com.example.socialmedia.data.model.Post
 import com.example.socialmedia.data.viewmodel.PostViewModel
 import com.example.socialmedia.R
 import com.example.socialmedia.data.viewmodel.UserViewModel
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 
 @Composable
-fun AddPostScreen(navController: NavController, postViewModel: PostViewModel = viewModel(),userViewModel: UserViewModel=viewModel()) {
+fun AddPostScreen(navController: NavController, postViewModel: PostViewModel = viewModel(), userViewModel: UserViewModel = viewModel()) {
     var postText by remember { mutableStateOf("") }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    var localImagePath by remember { mutableStateOf<String?>(null) }
     var imageSelectionError by remember { mutableStateOf<String?>(null) }
 
     val currentUser by userViewModel.currentUser.observeAsState()
+    val context = LocalContext.current
 
     // Image picker launcher
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        selectedImageUri = uri
-        imageSelectionError = if (uri == null) "Failed to select image" else null
+        uri?.let { imageUri ->
+            // Save image to local directory
+            localImagePath = saveImageToLocalDirectory(context, imageUri)
+            selectedImageUri = imageUri
+            imageSelectionError = if (localImagePath == null) "Failed to save image" else null
+        } ?: run {
+            imageSelectionError = "Failed to select image"
+        }
     }
 
     Box(
@@ -79,20 +95,23 @@ fun AddPostScreen(navController: NavController, postViewModel: PostViewModel = v
             Spacer(modifier = Modifier.height(16.dp))
 
             // Display selected image if available
-            selectedImageUri?.let {
-                Image(
-                    painter = rememberAsyncImagePainter(model = it),
-                    contentDescription = "Selected Image",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .padding(16.dp)
-                        .background(
-                            color = Color.White,
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                )
+            localImagePath?.let { imagePath ->
+                val imageBitmap: Bitmap? = BitmapFactory.decodeFile(imagePath)
+                imageBitmap?.let {
+                    Image(
+                        bitmap = it.asImageBitmap(),
+                        contentDescription = "Selected Image",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                            .padding(16.dp)
+                            .background(
+                                color = Color.White,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -130,16 +149,18 @@ fun AddPostScreen(navController: NavController, postViewModel: PostViewModel = v
             // Submit button
             Button(
                 onClick = {
-                    if (postText.isNotEmpty()) {
+                    if (postText.isNotEmpty() && localImagePath != null) {
                         val newPost = Post(
                             content = postText,
-                            imageUrl = selectedImageUri?.toString(), // Include image URI if selected
-                            userId = 1 // Replace with actual user ID
+                            imageUrl = localImagePath, // Store the local path or use a file provider for secure access
+                            userId = currentUser!!.id
                         )
                         postViewModel.addPost(newPost)
                         navController.popBackStack() // Navigate back after submission
-                    } else {
+                    } else if (postText.isEmpty()) {
                         imageSelectionError = "Please enter some content"
+                    } else {
+                        imageSelectionError = "Please select an image"
                     }
                 },
                 modifier = Modifier
@@ -158,3 +179,18 @@ fun AddPostScreen(navController: NavController, postViewModel: PostViewModel = v
     }
 }
 
+fun saveImageToLocalDirectory(context: Context, imageUri: Uri): String? {
+    val inputStream: InputStream? = context.contentResolver.openInputStream(imageUri)
+    val file = File(context.filesDir, "image_${System.currentTimeMillis()}.jpg")
+    return try {
+        val outputStream = FileOutputStream(file)
+        inputStream?.copyTo(outputStream)
+        outputStream.close()
+        file.absolutePath
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    } finally {
+        inputStream?.close()
+    }
+}

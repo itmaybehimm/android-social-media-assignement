@@ -123,7 +123,7 @@ fun StudentEditScreen(navController: NavController,studentId: Int, userViewModel
                         Toast.makeText(context, "All fields are required", Toast.LENGTH_SHORT).show()
                     } else {
                         userViewModel.updateUser(
-                            User(id = studentId, fullName = fullName, dateOfBirth = dob, email = email, password = password),
+                            User(id = studentId, fullName = fullName, dateOfBirth = dob, email = email, password = password, createdAt = student!!.createdAt, updatedAt = getCurrentDateTime()),
                             onSuccess = {
                                 Toast.makeText(context, "User updated successfully", Toast.LENGTH_SHORT).show()
                                 navController.navigate("post")

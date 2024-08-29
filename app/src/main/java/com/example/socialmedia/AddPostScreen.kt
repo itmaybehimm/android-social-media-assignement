@@ -149,7 +149,7 @@ fun AddPostScreen(navController: NavController, postViewModel: PostViewModel = v
             // Submit button
             Button(
                 onClick = {
-                    if (postText.isNotEmpty() && localImagePath != null) {
+                    if (postText.isNotEmpty()) {
                         val newPost = Post(
                             content = postText,
                             imageUrl = localImagePath, // Store the local path or use a file provider for secure access
@@ -159,8 +159,6 @@ fun AddPostScreen(navController: NavController, postViewModel: PostViewModel = v
                         navController.popBackStack() // Navigate back after submission
                     } else if (postText.isEmpty()) {
                         imageSelectionError = "Please enter some content"
-                    } else {
-                        imageSelectionError = "Please select an image"
                     }
                 },
                 modifier = Modifier

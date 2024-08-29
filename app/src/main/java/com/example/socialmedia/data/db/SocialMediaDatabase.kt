@@ -1,17 +1,20 @@
 package com.example.socialmedia.data.db
 
 
+import Converters
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.example.socialmedia.data.dao.CommentDao
 import com.example.socialmedia.data.model.*
 
 @Database(
     entities = [User::class,Post::class,Comment::class,UserPostReaction::class],
-    version =4
+    version =7
 )
+@TypeConverters(Converters::class)
 abstract class SocialMediaDatabase : RoomDatabase() {
 
     abstract fun userDao(): UserDao

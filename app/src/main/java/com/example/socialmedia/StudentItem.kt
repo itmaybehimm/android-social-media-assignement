@@ -10,11 +10,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.ButtonDefaults
-
 @Composable
 fun StudentItem(
     studentName: String,
     studentId: String,
+    createdAt: String,
+    updatedAt: String,
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -43,6 +44,23 @@ fun StudentItem(
                 color = Color(0xFF777777)
             )
             Spacer(modifier = Modifier.height(8.dp))
+
+            // Created at timestamp
+            Text(
+                text = "Created at: $createdAt",
+                fontSize = 12.sp,
+                color = Color(0xFF777777)
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Updated at timestamp
+            Text(
+                text = "Updated at: $updatedAt",
+                fontSize = 12.sp,
+                color = Color(0xFF777777)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)

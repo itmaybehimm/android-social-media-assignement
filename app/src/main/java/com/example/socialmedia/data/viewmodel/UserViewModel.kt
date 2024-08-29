@@ -43,9 +43,10 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             try {
                 repository.insertAdminHardcoded()
+                Log.d("Admin","Admin added")
             } catch (e: Exception) {
                 // Admin exists
-
+                Log.d("Admin","Admin not added ${e.message}")
             }
         }
     }

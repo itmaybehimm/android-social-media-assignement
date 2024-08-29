@@ -3,6 +3,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -18,7 +20,6 @@ import com.example.socialmedia.R
 import com.example.socialmedia.StudentItem
 import com.example.socialmedia.data.model.User
 import com.example.socialmedia.data.viewmodel.UserViewModel
-
 @Composable
 fun AdminScreen(navController: NavController, userViewModel: UserViewModel = viewModel()) {
     // Observe the list of students
@@ -68,25 +69,22 @@ fun AdminScreen(navController: NavController, userViewModel: UserViewModel = vie
                     modifier = Modifier.padding(bottom = 32.dp)
                 )
 
-                Text(
-                    text = "Student List",
-                    fontSize = 28.sp,
-                    color = Color(0xFF9C2BD4),
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-
                 // Search bar
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = { searchQuery = it },
                     label = { Text("Search by email") },
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
                 )
 
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
                     items(paginatedStudents) { student ->
                         StudentItem(
                             studentName = student.fullName,
+                            createdAt = student.createdAt.toString(),
+                            updatedAt = student.updatedAt.toString(),
                             studentId = student.id.toString(),
                             onEdit = {
                                 navController.navigate("studentedit/${student.id}")
@@ -99,7 +97,7 @@ fun AdminScreen(navController: NavController, userViewModel: UserViewModel = vie
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().fillMaxHeight(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Button(
@@ -125,5 +123,23 @@ fun AdminScreen(navController: NavController, userViewModel: UserViewModel = vie
                 }
             }
         }
+
+
+                FloatingActionButton(
+                    onClick = {
+                        navController.navigate("register-admin") // Navigate to the Register screen
+                    },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(32.dp),
+                    backgroundColor = Color(0xFF9C2BD4)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add User",
+                        tint = Color.White
+                    )
+                }
+
     }
 }

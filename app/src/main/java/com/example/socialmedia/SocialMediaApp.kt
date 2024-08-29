@@ -18,6 +18,7 @@ fun SocialMediaApp() {
         composable("main") { MainScreen(navController) }
         composable("login") { LoginScreen(navController, userViewModel) }
         composable("register") { RegisterScreen(navController, userViewModel) }
+        composable("register-admin") { RegisterAdminScreen(navController, userViewModel) }
         composable("admin") { AdminScreen(navController, userViewModel) }
         composable("post") { PostScreen(navController) }
         composable("addpost") { AddPostScreen(navController) }

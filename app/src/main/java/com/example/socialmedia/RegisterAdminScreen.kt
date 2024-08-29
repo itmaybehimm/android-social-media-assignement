@@ -30,7 +30,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.socialmedia.data.model.User
 import com.example.socialmedia.data.viewmodel.UserViewModel
 @Composable
-fun RegisterScreen(navController: NavController, userViewModel: UserViewModel = viewModel()) {
+fun RegisterAdminScreen(navController: NavController, userViewModel: UserViewModel = viewModel()) {
     var fullName by remember { mutableStateOf("") }
     var dateOfBirth by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -138,7 +138,7 @@ fun RegisterScreen(navController: NavController, userViewModel: UserViewModel = 
                                 user,
                                 onSuccess = {
                                     Toast.makeText(context, "Registration Successful", Toast.LENGTH_SHORT).show()
-                                    navController.navigate("login") {
+                                    navController.navigate("admin") {
                                         popUpTo("register") { inclusive = true }
                                     }
                                 },

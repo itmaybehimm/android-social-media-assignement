@@ -24,6 +24,8 @@ import com.example.socialmedia.data.viewmodel.CommentViewModel
 import com.example.socialmedia.data.viewmodel.PostViewModel
 import com.example.socialmedia.data.viewmodel.UserViewModel
 import kotlinx.coroutines.launch
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun PostScreen(
@@ -41,13 +43,18 @@ fun PostScreen(
     // State for tracking navigation
     var navigateToLogin by remember { mutableStateOf(false) }
 
-    // State for showing confirmation dialog
+    // State for showing confirmation dialogs
     var showConfirmDialog by remember { mutableStateOf(false) }
+    var showLogoutDialog by remember { mutableStateOf(false) }
     var postToDelete by remember { mutableStateOf<Post?>(null) }
+
+    // Context for showing Toasts
+    val context = LocalContext.current
 
     // Effect to handle navigation
     LaunchedEffect(navigateToLogin) {
         if (navigateToLogin) {
+            Toast.makeText(context, "Logout successful", Toast.LENGTH_SHORT).show()
             navController.navigate("main") {
                 // Clear the back stack to prevent returning to PostScreen
                 popUpTo("main") { inclusive = true }
@@ -124,14 +131,9 @@ fun PostScreen(
                 )
             }
 
-            // Logout button
+            // Logout button with confirmation
             Button(
-                onClick = {
-                    userViewModel.logout {
-                        // Trigger navigation to login screen after logout completes
-                        navigateToLogin = true
-                    }
-                },
+                onClick = { showLogoutDialog = true },
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(16.dp),
@@ -156,8 +158,7 @@ fun PostScreen(
                     )
                 }
 
-            }
-            else{
+            } else {
                 FloatingActionButton(
                     onClick = { navController.navigate("studentedit/${currentUser.id}") },
                     backgroundColor = Color(0xFF9C2BD4),
@@ -199,6 +200,33 @@ fun PostScreen(
                                 postToDelete = null
                             }
                         ) {
+                            Text("Cancel")
+                        }
+                    }
+                )
+            }
+
+            // Show logout confirmation dialog
+            if (showLogoutDialog) {
+                AlertDialog(
+                    onDismissRequest = { showLogoutDialog = false },
+                    title = { Text("Logout") },
+                    text = { Text("Are you sure you want to log out?") },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                userViewModel.logout {
+                                    navigateToLogin = true
+                                }
+                                showLogoutDialog = false
+                            }
+                        ) {
+                            Text("Logout")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = { showLogoutDialog = false }) {
                             Text("Cancel")
                         }
                     }

@@ -78,6 +78,7 @@ fun PostItem(
                 Button(onClick = {
                     Log.d("PostItem", "Deleting comment with ID: ${commentToDelete?.id}") // Debug log
                     showDeleteDialog = false
+                    Toast.makeText(context,"Comment Deleted Successfully",Toast.LENGTH_SHORT).show()
                     commentToDelete?.let { comment ->
                         commentViewModel.deleteComment(comment)
                     }
@@ -168,6 +169,7 @@ fun PostItem(
                                 content = commentText.text
                             )
                             commentViewModel.insertComment(comment)
+                            Toast.makeText(context,"Comment Added Successfully",Toast.LENGTH_SHORT).show()
                             commentText = TextFieldValue() // Clear the text field
                         }
                     },

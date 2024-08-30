@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -156,6 +157,7 @@ fun AddPostScreen(navController: NavController, postViewModel: PostViewModel = v
                             userId = currentUser!!.id
                         )
                         postViewModel.addPost(newPost)
+                        Toast.makeText(context,"Post Added Successfully",Toast.LENGTH_SHORT).show()
                         navController.popBackStack() // Navigate back after submission
                     } else if (postText.isEmpty()) {
                         imageSelectionError = "Please enter some content"

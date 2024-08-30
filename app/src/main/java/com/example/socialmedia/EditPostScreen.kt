@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -173,6 +174,7 @@ fun EditPostScreen(
                         content = postText,
                         imageUrl = localImagePath // Update with actual image handling logic
                     )
+                    Toast.makeText(context,"Post Updated Successfully", Toast.LENGTH_SHORT).show()
                     updatedPost?.let {
                         postViewModel.updatePost(it)
                         navController.popBackStack() // Navigate back after submission

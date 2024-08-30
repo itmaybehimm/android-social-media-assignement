@@ -1,5 +1,6 @@
 package com.example.socialmedia.data.viewmodel
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
@@ -159,16 +160,17 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun getUserByEmailAndPassword(email: String, password: String) {
+    suspend fun getUserByEmailAndPassword(email: String, password: String): Boolean {
         Log.d("UserViewModel", "Fetching user by email: $email")
-        scope.launch {
-            try {
-                val user = repository.getUserByEmailAndPassword(email, password)
-                Log.d("UserViewModel", "Fetched ${user?.email} with name ${user?.fullName} ")
-                _currentUser.postValue(user)
-            } catch (e: Exception) {
-                Log.e("UserViewModel", "Error fetching user by email and password", e)
-            }
+        return try {
+            val user = repository.getUserByEmailAndPassword(email, password)
+            Log.d("UserViewModel", "Fetched ${user?.email} with name ${user?.fullName} ")
+            _currentUser.postValue(user) // Update LiveData with the fetched user
+            user != null // Return true if user is found
+        } catch (e: Exception) {
+            Log.e("UserViewModel", "Error fetching user by email and password", e)
+            _currentUser.postValue(null) // Update LiveData with null on error
+            false // Return false on error
         }
     }
 
@@ -210,26 +212,35 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private suspend fun clearUserSession() {
-        Log.d("UserViewModel", "Saving user session for user ID: ${-1}")
-        val sharedPreferences = getApplication<Application>()
-            .getSharedPreferences("user_prefs", Application.MODE_PRIVATE)
-        sharedPreferences.edit().putInt("user_id", -1).apply()
-    }
 
     fun logout(onComplete: () -> Unit) {
         Log.d("UserViewModel", "Logging out user...")
+        _currentUser.value = null
+        Log.d("UserViewModel"," currentuser latest: ${currentUser.value}")
         scope.launch {
             try {
                 clearUserSession()
+
                 withContext(Dispatchers.Main) {
-                    _currentUser.value = null  // Use setValue on the main thread
+
+                    Log.d("UserViewModel", "Logout successful, _currentUser is now ${_currentUser.value}")
+                    onComplete()
                 }
-                Log.d("UserViewModel", "Logout successful, _currentUser is now ${_currentUser.value}")
-                onComplete()
             } catch (e: Exception) {
                 Log.e("UserViewModel", "Logout error", e)
+                onComplete()
             }
+        }
+    }
+
+    private suspend fun clearUserSession() {
+        Log.d("UserViewModel", "Clearing user session...")
+        withContext(Dispatchers.IO) {
+            val sharedPreferences = getApplication<Application>()
+                .getSharedPreferences("user_prefs", Application.MODE_PRIVATE)
+            sharedPreferences.edit().putInt("user_id", -1).apply()
+
+            Log.d("UserViewModel", "User session cleared. ${sharedPreferences.getInt("user_id",-1)}")
         }
     }
 

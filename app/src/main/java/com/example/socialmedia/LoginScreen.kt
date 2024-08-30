@@ -27,6 +27,8 @@ import com.example.socialmedia.data.viewmodel.UserViewModel
 import android.widget.Toast
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 import java.time.format.TextStyle
 
 @Composable
@@ -34,7 +36,6 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel = vie
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
-    var loginError by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
 
     val currentUser by userViewModel.currentUser.observeAsState()
@@ -42,10 +43,11 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel = vie
     LaunchedEffect(Unit) {
         if (currentUser != null) {
             userViewModel.logout {
-                d("LoginScreen", "Clearing existing session at LoginScreen launch")
+                d("LoginScreen", "Clearing existing session at LoginScreen launch ${currentUser}")
             }
         }
     }
+
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -132,7 +134,13 @@ fun LoginScreen(navController: NavController, userViewModel: UserViewModel = vie
 
                 Button(
                     onClick = {
-                        userViewModel.getUserByEmailAndPassword(email, password)
+                        // Launch a coroutine to call the suspend function
+                        userViewModel.viewModelScope.launch {
+                            val exists = userViewModel.getUserByEmailAndPassword(email, password)
+                            // Show toast based on whether the user exists or not
+                            val message = if (exists) "Login successful!" else "Invalid credentials."
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        }
                     },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF48B76D)),
                     shape = MaterialTheme.shapes.medium,
